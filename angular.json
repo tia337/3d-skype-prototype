@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "skype-prototype"
+    }
+  },
+  "defaultProject": "skype-prototype",
+  "cli": {
+    "analytics": false
+  }
 }
