@@ -2,12 +2,12 @@
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map, finalize } from 'rxjs/operators';
+import { map, finalize, tap } from 'rxjs/operators';
 
 import { environment } from '@environments/environment';
 import { Account } from '@app/_models';
 
-const baseUrl = `${environment.apiUrl}/accounts`;
+const baseUrl = `${environment.apiUrl}`;
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -23,15 +23,17 @@ export class AccountService {
     }
 
     public get accountValue(): Account {
-        return this.accountSubject.value;
+      console.log(this.accountSubject.value)
+      return this.accountSubject.value;
     }
 
     login(email: string, password: string) {
-        return this.http.post<any>(`${baseUrl}/authenticate`, { email, password }, { withCredentials: true })
+        return this.http.post<any>(`${baseUrl}/authenticate/login`, { email, password })
             .pipe(map(account => {
-                this.accountSubject.next(account);
-                this.startRefreshTokenTimer();
-                return account;
+              console.log(account)
+                // this.accountSubject.next(account);
+                // this.startRefreshTokenTimer();
+                // return account;
             }));
     }
 
@@ -51,8 +53,9 @@ export class AccountService {
             }));
     }
 
-    register(account: Account) {
-        return this.http.post(`${baseUrl}/register`, account);
+    register(account: any) {
+      console.log(account)
+        return this.http.post(`${baseUrl}/authenticate/register`, {username: account.email, password: account.password} );
     }
 
     verifyEmail(token: string) {
