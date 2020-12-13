@@ -31,9 +31,9 @@ export class AccountService {
         return this.http.post<any>(`${baseUrl}/authenticate/login`, { email, password })
             .pipe(map(account => {
               console.log(account)
-                // this.accountSubject.next(account);
-                // this.startRefreshTokenTimer();
-                // return account;
+                this.accountSubject.next(account);
+                this.startRefreshTokenTimer();
+                return account;
             }));
     }
 
