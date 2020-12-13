@@ -55,7 +55,7 @@ export class AccountService {
 
     register(account: any) {
       console.log(account)
-        return this.http.post(`${baseUrl}/authenticate/register`, {username: account.email, password: account.password} );
+        return this.http.post(`${baseUrl}/authenticate/register`, {name: account.name, email: account.email, password: account.password} );
     }
 
     verifyEmail(token: string) {
