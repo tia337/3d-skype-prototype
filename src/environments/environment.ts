@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://3dskypeserver20201110235252.azurewebsites.net/api'
+  apiUrl: 'https://cors-anywhere.herokuapp.com/http://server3dskype.herokuapp.com/api'
 };
 
 /*
