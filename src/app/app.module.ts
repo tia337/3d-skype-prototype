@@ -21,7 +21,7 @@ import { HomeComponent } from './home';
         AppComponent,
         AlertComponent,
         HomeComponent
-    ],
+  ],
     providers: [
         // { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AccountService] },
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

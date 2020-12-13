@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --open",
+    "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -20,6 +20,11 @@
     "@angular/platform-browser-dynamic": "^10.0.3",
     "@angular/router": "^10.0.3",
     "rxjs": "^6.5.5",
+    "@tensorflow-models/body-pix": "2.0",
+    "@tensorflow/tfjs": "1.2",
+    "@tensorflow/tfjs-converter": "^1.2.11",
+    "@tensorflow/tfjs-core": "^1.2.11",
+    "simple-peer": "^9.7.2",
     "tslib": "^2.0.0",
     "zone.js": "^0.10.3"
   },

@@ -13,7 +13,6 @@ const routes: Routes = [
     { path: 'account', loadChildren: accountModule },
     { path: 'profile', loadChildren: profileModule, canActivate: [AuthGuard] },
     { path: 'video', loadChildren: videoCallModule },
-
     // otherwise redirect to home
     { path: '**', redirectTo: '' }
 ];
