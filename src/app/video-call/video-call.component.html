@@ -97,17 +97,19 @@
     </div>
   </div>
   <div class="row" style="margin: 15px;">
-    <div class="col-md-12 alignContent" *ngFor="let id of users | keyvalue">
-      <span *ngIf="id.key !== yourID">
+    <div class="col-md-12 alignContent" >
         <button
           type="button"
           class="btn btn-primary"
           style="margin: 10px;"
-          (click)="callPeer(id.key)"
+          (click)="callPeer()"
         >
-          Call {{ id.key }}
+          Call
         </button>
-      </span>
     </div>
   </div>
+
+  <form [formGroup]="form" class="example-form" (ngSubmit)="onSubmit()">
+   			<input class="form-control" formControlName="data" type="text"  placeholder="data">
+   	</form>
 </div>

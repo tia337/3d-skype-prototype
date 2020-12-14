@@ -3,12 +3,8 @@ import {
   ElementRef,
   ViewChild,
   OnInit,
-  AfterViewInit,
-  PLATFORM_ID,
-  Inject,
-  OnDestroy,
 } from '@angular/core';
-import io from 'socket.io-client';
+import socket from 'socket.io-client';
 import Peer from 'simple-peer';
 import { isPlatformBrowser } from '@angular/common';
 import * as tfjs from '@tensorflow/tfjs';
@@ -23,6 +19,11 @@ import {
 } from './options';
 import {ModelConfig, PersonInferenceConfig} from '@tensorflow-models/body-pix/dist/body_pix_model';
 import * as util from 'util';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {MustMatch} from '@app/_helpers';
+import {first} from 'rxjs/operators';
+import * as process from 'process';
+import {AccountService} from "@app/_services";
 
 @Component({
   selector: 'app-video-call',
@@ -31,20 +32,27 @@ import * as util from 'util';
 })
 export class VideoCallComponent implements OnInit {
   yourID = '';
+  yourPeer = '';
   users = {};
   stream;
   receivingCall = false;
   caller = '';
   callerSignal;
   callAccepted = false;
+  form: FormGroup;
   @ViewChild('userVideo', { static: true }) userVideo: any;
   @ViewChild('canvas', { static: true }) canvas: any;
   @ViewChild('partnerVideo', { static: true }) partnerVideo: ElementRef<HTMLVideoElement>;
   socket;
 
-  constructor() { }
+  constructor(private formBuilder: FormBuilder,
+              private accountService: AccountService,
+              ) { }
 
   ngOnInit(): void {
+    this.form = this.formBuilder.group({
+      data: [''],
+    });
     const options = {
       architecture: ARCHITECTURE,
       multiplier: MILTIPLIER,
@@ -52,7 +60,15 @@ export class VideoCallComponent implements OnInit {
       quantBytes: QUANT_BYTES
     } as ModelConfig;
 
-    this.socket = io.connect('http://0.0.0.0:8080');
+    console.log('-=-=-=-=-=-=-=-', this.accountService.accountValue);
+    this.socket = socket('http://localhost:8888/api', {
+      path: '/api',
+      query: { id: this.accountService.accountValue},
+    });
+
+    // this.socket.on('test', (data) => {
+    //   console.log('=-=-=--', data)
+    // });
 
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
@@ -66,7 +82,7 @@ export class VideoCallComponent implements OnInit {
           .then(net => this.perform(net))
           .catch(err => console.log(util.inspect(err, {depth: 12})));
       });
-    // }
+
     this.socket.on('yourID', (id) => {
       this.yourID = id;
     });
@@ -77,6 +93,37 @@ export class VideoCallComponent implements OnInit {
       this.receivingCall = true;
       this.caller = data.from;
       this.callerSignal = data.signal;
+    });
+  }
+
+  // convenience getter for easy access to form fields
+  // tslint:disable-next-line:typedef
+  get f() { return this.form.controls; }
+
+  // tslint:disable-next-line:typedef
+  onSubmit() {
+    console.log('----')
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: this.stream,
+    });
+
+    peer.on('signal', (data) => {
+      this.socket.emit('CallUser', {
+        userToCall: this.f.data.value,
+        signalData: data,
+        from: this.yourID,
+      });
+    });
+
+    peer.on('stream', (stream) => {
+      this.partnerVideo.nativeElement.srcObject = stream;
+    });
+
+    this.socket.on('callAccepted', (signal) => {
+      this.callAccepted = true;
+      peer.signal(signal);
     });
   }
 
@@ -100,7 +147,6 @@ export class VideoCallComponent implements OnInit {
         const maskBlurAmount = 0;
         const flipHorizontal = true;
         const canvases = document.getElementsByName('video-canvas');
-        console.log('-1--1--1', canvases)
         // @ts-ignore
         for (const canv of canvases) {
           canv.height = 640;
@@ -151,8 +197,8 @@ export class VideoCallComponent implements OnInit {
   }
 
   // tslint:disable-next-line:typedef
-  callPeer(id) {
-    console.log('id', id)
+  callPeer(id= 1) {
+    console.log('id-------', id)
     const peer = new Peer({
       initiator: true,
       trickle: false,
@@ -160,6 +206,7 @@ export class VideoCallComponent implements OnInit {
     });
 
     peer.on('signal', (data) => {
+      this.yourPeer = JSON.stringify(data);
       this.socket.emit('CallUser', {
         userToCall: id,
         signalData: data,
@@ -200,6 +247,7 @@ export class VideoCallComponent implements OnInit {
       } as ModelConfig;
 
       this.partnerVideo.nativeElement.srcObject = stream;
+      console.log('-=-=-=-==++++++++++++++')
       await bodyPix.load(options)
         .then(net => this.performPartnerVideo(net))
         .catch(err => console.log(util.inspect(err, {depth: 12})));
