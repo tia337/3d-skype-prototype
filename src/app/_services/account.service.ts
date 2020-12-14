@@ -23,14 +23,12 @@ export class AccountService {
     }
 
     public get accountValue(): Account {
-      console.log(this.accountSubject.value)
       return this.accountSubject.value;
     }
 
     login(email: string, password: string) {
         return this.http.post<any>(`${baseUrl}/authenticate/login`, { email, password })
             .pipe(map((account: Account) => {
-              console.log(account)
                 this.accountSubject.next(account);
                 localStorage.setItem('jwtToken', account.jwtToken);
                 localStorage.setItem('user', JSON.stringify(account));
@@ -55,7 +53,6 @@ export class AccountService {
     }
 
     register(account: any) {
-      console.log(account)
         return this.http.post(`${baseUrl}/authenticate/register`, {name: account.name, email: account.email, password: account.password} );
     }
 
