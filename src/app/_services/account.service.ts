@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, finalize, tap } from 'rxjs/operators';
 
@@ -78,6 +78,10 @@ export class AccountService {
 
     getById(id: string) {
         return this.http.get<Account>(`${baseUrl}/${id}`);
+    }
+
+    getParticipantByEmail(email: string) {
+        return this.http.get<HttpResponse<Account>>(`${baseUrl}/user?emailAddress=${email}`);
     }
     
     create(params) {

@@ -1,9 +1,40 @@
 
 <div class="container fill">
-    <div class="input-group mb-3 mt-3">
-        <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-        <button class="btn btn-outline-secondary" type="button">Button</button>
+    <form [formGroup]="searchForm">
+        <div class="input-group mb-3 mt-3">
+            <input type="text" 
+                formControlName="searchString" 
+                class="form-control" 
+                placeholder="Email" 
+                aria-label="Email" 
+                aria-describedby="basic-addon2"
+                [ngClass]="{ 'is-invalid': submitted && f.searchString.errors }"
+            >
+            <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" 
+                (click)="submitForm()" [disabled]="loading"
+            >
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                Find
+            </button>
+            </div>
+            <div *ngIf="submitted && f.searchString.errors" class="invalid-feedback">
+                <div *ngIf="f.searchString.errors.required">Email is required</div>
+                <div *ngIf="f.searchString.errors.email">Email must be a valid email address</div>
+            </div>
         </div>
-    </div>
+    </form>
+
+    <ul class="list-group" *ngIf="participant$ | async as participant; else stub">
+        <li class="list-group-item d-flex">
+            <div class="col-4 align-self-center">{{participant.name}}</div>
+            <div class="col-4 align-self-center">{{participant.email}}</div>
+            <a class="btn btn-success col-4" [routerLink]="['/video']">Call user</a>
+        </li>
+    </ul>
+
+    <ng-template #stub>
+        <h1 class="display-4 text-center">Enter receivers email to make a call</h1>
+    </ng-template>
+
 </div>
