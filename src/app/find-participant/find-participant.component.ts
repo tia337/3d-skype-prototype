@@ -1,9 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Account } from '@app/_models';
 import { AccountService } from '@app/_services';
 import { Observable, of } from 'rxjs';
-import { catchError, finalize, tap } from 'rxjs/operators';
+import { catchError, filter, finalize, map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-find-participant',
@@ -37,10 +38,7 @@ export class FindParticipantComponent implements OnInit {
     this.loading = true
     this.participant$ = this.accountService
       .getParticipantByEmail(this.searchForm.value?.searchString)
-        .pipe(
-          catchError(err => of(err)),
-          finalize(() => this.loading = false)
-        );
+      .pipe(finalize(() => this.loading = false));
   }
 
   private initForm(): void {

@@ -25,7 +25,7 @@
         </div>
     </form>
 
-    <ul class="list-group" *ngIf="participant$ | async as participant; else stub">
+    <ul class="list-group" *ngIf="(participant$ | async) as participant; else stub">
         <li class="list-group-item d-flex">
             <div class="col-4 align-self-center">{{participant.name}}</div>
             <div class="col-4 align-self-center">{{participant.email}}</div>

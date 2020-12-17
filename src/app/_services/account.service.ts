@@ -81,7 +81,7 @@ export class AccountService {
     }
 
     getParticipantByEmail(email: string) {
-        return this.http.get<HttpResponse<Account>>(`${baseUrl}/user?emailAddress=${email}`);
+        return this.http.get<Account>(`${baseUrl}/user?emailAddress=${email}`);
     }
     
     create(params) {
