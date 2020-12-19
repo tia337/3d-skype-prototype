@@ -9,6 +9,8 @@ import { AccountService } from './_services';
 import { AppComponent } from './app.component';
 import { AlertComponent } from './_components';
 import { HomeComponent } from './home';
+import { ConfirmationDialogComponent } from './confir-dialog-component/confir-dialog-component.component';
+import {VideoCallComponent} from "@app/video-call/video-call.component";
 
 @NgModule({
     imports: [
@@ -21,11 +23,13 @@ import { HomeComponent } from './home';
         AppComponent,
         AlertComponent,
         HomeComponent
-  ],
+,
+      ConfirmationDialogComponent  ],
     providers: [
-        // { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AccountService] },
+        { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AccountService] },
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+      VideoCallComponent
     ],
     bootstrap: [AppComponent]
 })

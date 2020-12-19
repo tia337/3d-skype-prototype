@@ -2,4 +2,7 @@
     <div class="container">
         <h1>Hi {{account.name}}!</h1>
     </div>
+    <form [formGroup]="form" class="example-form" (ngSubmit)="onSubmit()">
+       			<input class="form-control" formControlName="data" type="text"  placeholder="data">
+       	</form>
 </div>

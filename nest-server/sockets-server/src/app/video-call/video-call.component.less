@@ -1,0 +1,146 @@
+.call-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: rgb(44, 44, 44);
+}
+
+.video-blocks {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.video-block {
+  background: black;
+}
+
+.left {
+  transform: rotate(-0.25turn);
+}
+
+.right {
+  transform: rotate(0.25turn);
+}
+
+.center-blocks {
+  display: flex;
+  align-items: center;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.actions {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.action-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.action-container:hover {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+.blue {
+  background: rgb(0, 119, 255);
+}
+
+.red {
+  background: red;
+}
+
+.action {
+  font-size: 30px !important;
+  color: white;
+}
+
+body {
+  margin: 0;
+}
+
+.higher-slider-container {
+  position: absolute;
+  left: -120px;
+  top: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.lower-slider-container {
+  position: absolute;
+  left: -120px;
+  bottom: 160px;
+  display: flex;
+  flex-direction: column;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 300px;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  transform: rotate(-90deg);
+  z-index: 100;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: rgb(0, 119, 255);
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: rgb(37, 139, 255);
+  cursor: pointer;
+}
+
+
+.slider-disabled {
+  cursor: default;
+  opacity: 0.2;
+}
+
+.slider-disabled::-webkit-slider-thumb {
+    cursor: default;
+}
+
+.slider-disabled::-moz-range-thumb {
+  cursor: default;
+  background: rgb(106, 137, 173);
+}
+
+.slider-disabled:hover {
+    opacity: 0.2;
+}
