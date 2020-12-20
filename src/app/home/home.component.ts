@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+﻿import {Component, OnInit} from '@angular/core';
 
 import { AccountService } from '@app/_services';
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -12,7 +12,6 @@ export class HomeComponent {
 
     constructor(private accountService: AccountService,
                 private formBuilder: FormBuilder,
-                private socketsService: SocketsService,
                 private router: Router) {
       this.form = this.formBuilder.group({
         data: [''],
@@ -23,10 +22,8 @@ export class HomeComponent {
 
     onSubmit() {
       // console.log(this.f.data.value)
-      this.router.navigateByUrl('/video', { state: {
-          call: true,
-          to: this.f.data.value,
-        }});
+
 
     }
+
 }

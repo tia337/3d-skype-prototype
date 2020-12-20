@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { VideoCallRoutingModule } from './video-call-routing.module';
 import { VideoCallComponent } from './video-call.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import {Account} from "../_models";
 import {AccountModule} from "../account/account.module";
 
 @NgModule({

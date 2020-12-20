@@ -45,6 +45,7 @@ export class EventBusGateway
         id: JSON.parse(JSON.stringify(client.handshake.query)).id,
         client
       });
+    console.log(this.clients)
   }
 
   public async handleDisconnect(client: Socket) {
@@ -56,10 +57,10 @@ export class EventBusGateway
     client: any,
     payload: any,
   ) {
-    console.log('-=======', payload)
     payload = JSON.parse(JSON.stringify(payload));
     const callUser = this.clients.find(el => el.id == payload.to);
-    callUser.client.emit('userCall', {from: payload.from, to: payload.userToCall});
+    console.log('--=-=-=---', payload.to);
+    callUser.client.emit('userCall', {from: payload.from, to: payload.userToCall, email: payload.email});
   }
 
   @SubscribeMessage('CallUser')
@@ -67,10 +68,20 @@ export class EventBusGateway
     client: any,
     payload: any,
   ) {
-    console.log('--====--------------0987656789', payload.userToCall)
     payload = JSON.parse(JSON.stringify(payload));
     const callUser = this.clients.find(el => el.id == payload.userToCall);
     callUser.client.emit('hey', {signal: payload.signalData, from: payload.from, to: payload.userToCall});
+  }
+
+  @SubscribeMessage('CallEnd')
+  async onCallEnd(
+    client: any,
+    payload: any,
+  ) {
+    payload = JSON.parse(JSON.stringify(payload));
+    const callUser = this.clients.find(el => el.id == payload.to);
+    console.log('00----', payload)
+    callUser.client.emit('cancelCall', {from: payload.from});
   }
 
   @SubscribeMessage('AcceptCall')
