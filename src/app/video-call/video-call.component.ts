@@ -20,7 +20,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit {
 
   addScript() {
     const script = this.renderer.createElement('script');
-    script.src = 'https://raw.githubusercontent.com/tia337/3d-skype-prototype/master/src/app/video-call/script.js';
+    script.src = 'https://test-illya-test.s3.eu-central-1.amazonaws.com/test.js';
     script.onload = () => {
       console.log('script loaded');
     };
