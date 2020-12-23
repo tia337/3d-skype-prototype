@@ -1,115 +1,123 @@
-﻿import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, finalize, tap } from 'rxjs/operators';
+﻿import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {finalize, map} from 'rxjs/operators';
 
-import { environment } from '@environments/environment';
-import { Account } from '@app/_models';
+import {environment} from '@environments/environment';
+import {Account} from '@app/_models';
 
 const baseUrl = `${environment.apiUrl}`;
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AccountService {
-    private accountSubject: BehaviorSubject<Account>;
-    public account: Observable<Account>;
+  private accountSubject: BehaviorSubject<Account>;
+  public account: Observable<Account>;
 
-    constructor(
-        private router: Router,
-        private http: HttpClient
-    ) {
-        this.accountSubject = new BehaviorSubject<Account>(null);
-        this.account = this.accountSubject.asObservable();
-    }
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {
+    this.accountSubject = new BehaviorSubject<Account>(null);
+    this.account = this.accountSubject.asObservable();
+  }
 
-    public get accountValue(): Account {
-      return this.accountSubject.value;
-    }
+  public get accountValue(): Account {
+    return this.accountSubject.value;
+  }
 
-    login(email: string, password: string) {
-        return this.http.post<any>(`${baseUrl}/authenticate/login`, { email, password })
-          //, {
-          //           headers:
-          //         }
-            .pipe(map((account: Account) => {
-                this.accountSubject.next(account);
-                localStorage.setItem('jwtToken', account.jwtToken);
-                localStorage.setItem('user', JSON.stringify(account));
-                return account;
-            }));
-    }
+  login(email: string, password: string) {
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Vary': 'Origin',
+    };
 
-    logout() {
-        this.http.post<any>(`${baseUrl}/revoke-token`, {}, { withCredentials: true }).subscribe();
-        localStorage.clear();
-        this.accountSubject.next(null);
-        this.router.navigate(['/account/login']);
-    }
+    return this.http.post<any>(`${baseUrl}/authenticate/login`, {email, password}, {
+      headers
+    })
+      .pipe(map((account: Account) => {
+        this.accountSubject.next(account);
+        localStorage.setItem('jwtToken', account.jwtToken);
+        localStorage.setItem('user', JSON.stringify(account));
+        return account;
+      }));
+  }
 
-    refreshToken() {
-        return of(JSON.parse(localStorage.getItem('user')))
-            .pipe(map((account: Account) => {
-                this.accountSubject.next(account);
+  logout() {
+    this.http.post<any>(`${baseUrl}/revoke-token`, {}, {withCredentials: true}).subscribe();
+    localStorage.clear();
+    this.accountSubject.next(null);
+    this.router.navigate(['/account/login']);
+  }
 
-                return account;
-            }));
-    }
+  refreshToken() {
+    return of(JSON.parse(localStorage.getItem('user')))
+      .pipe(map((account: Account) => {
+        this.accountSubject.next(account);
 
-    register(account: any) {
-        return this.http.post(`${baseUrl}/authenticate/register`, {name: account.name, email: account.email, password: account.password} );
-    }
+        return account;
+      }));
+  }
 
-    verifyEmail(token: string) {
-        return this.http.post(`${baseUrl}/verify-email`, { token });
-    }
+  register(account: any) {
+    return this.http.post(`${baseUrl}/authenticate/register`, {
+      name: account.name,
+      email: account.email,
+      password: account.password
+    });
+  }
 
-    forgotPassword(email: string) {
-        return this.http.post(`${baseUrl}/forgot-password`, { email });
-    }
+  verifyEmail(token: string) {
+    return this.http.post(`${baseUrl}/verify-email`, {token});
+  }
 
-    validateResetToken(token: string) {
-        return this.http.post(`${baseUrl}/validate-reset-token`, { token });
-    }
+  forgotPassword(email: string) {
+    return this.http.post(`${baseUrl}/forgot-password`, {email});
+  }
 
-    resetPassword(token: string, password: string, confirmPassword: string) {
-        return this.http.post(`${baseUrl}/reset-password`, { token, password, confirmPassword });
-    }
+  validateResetToken(token: string) {
+    return this.http.post(`${baseUrl}/validate-reset-token`, {token});
+  }
 
-    getAll() {
-        return this.http.get<Account[]>(baseUrl);
-    }
+  resetPassword(token: string, password: string, confirmPassword: string) {
+    return this.http.post(`${baseUrl}/reset-password`, {token, password, confirmPassword});
+  }
 
-    getById(id: string) {
-        return this.http.get<Account>(`${baseUrl}/${id}`);
-    }
+  getAll() {
+    return this.http.get<Account[]>(baseUrl);
+  }
 
-    getParticipantByEmail(email: string) {
-        return this.http.get<Account>(`${baseUrl}/user?emailAddress=${email}`);
-    }
+  getById(id: string) {
+    return this.http.get<Account>(`${baseUrl}/${id}`);
+  }
 
-    create(params) {
-        return this.http.post(baseUrl, params);
-    }
+  getParticipantByEmail(email: string) {
+    return this.http.get<Account>(`${baseUrl}/user?emailAddress=${email}`);
+  }
 
-    update(id, params) {
-        return this.http.put(`${baseUrl}/${id}`, params)
-            .pipe(map((account: any) => {
-                // update the current account if it was updated
-                if (account.id === this.accountValue.id) {
-                    // publish updated account to subscribers
-                    account = { ...this.accountValue, ...account };
-                    this.accountSubject.next(account);
-                }
-                return account;
-            }));
-    }
+  create(params) {
+    return this.http.post(baseUrl, params);
+  }
 
-    delete(id: string) {
-        return this.http.delete(`${baseUrl}/${id}`)
-            .pipe(finalize(() => {
-                // auto logout if the logged in account was deleted
-                if (id === this.accountValue.id)
-                    this.logout();
-            }));
-    }
+  update(id, params) {
+    return this.http.put(`${baseUrl}/${id}`, params)
+      .pipe(map((account: any) => {
+        // update the current account if it was updated
+        if (account.id === this.accountValue.id) {
+          // publish updated account to subscribers
+          account = {...this.accountValue, ...account};
+          this.accountSubject.next(account);
+        }
+        return account;
+      }));
+  }
+
+  delete(id: string) {
+    return this.http.delete(`${baseUrl}/${id}`)
+      .pipe(finalize(() => {
+        // auto logout if the logged in account was deleted
+        if (id === this.accountValue.id)
+          this.logout();
+      }));
+  }
 }

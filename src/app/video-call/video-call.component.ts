@@ -13,7 +13,7 @@ import {
 import {ModelConfig, PersonInferenceConfig} from '@tensorflow-models/body-pix/dist/body_pix_model';
 import * as util from 'util';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {AccountService} from "@app/_services";
+import {AccountService, AlertService} from "@app/_services";
 import { Location } from '@angular/common';
 import {SocketsService} from "@app/socket-service/sockets.service";
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
@@ -35,7 +35,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
   callAccepted = false;
   form: FormGroup;
   @ViewChild('userVideo', { static: true }) userVideo: any;
-  @ViewChild('canvas', { static: true }) canvas: any;
+  // @ViewChild('canvas', { static: true }) canvas: any;
   @ViewChild('partnerVideo', { static: true }) partnerVideo: ElementRef<HTMLVideoElement>;
   socket;
 
@@ -46,15 +46,18 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
               private readonly elementRef: ElementRef,
               private renderer: Renderer2,
               private router: Router,
+              private alertService: AlertService,
   ) {
   }
 
   ngOnDestroy() {
     if (this.partnerVideo && this.partnerVideo.nativeElement && this.partnerVideo.nativeElement.srcObject) {
-      (this.partnerVideo.nativeElement.srcObject as MediaStream).getVideoTracks()[0].stop();
+      this.partnerVideo.nativeElement.pause();
+      (this.partnerVideo.nativeElement.srcObject as MediaStream).getTracks().forEach(track => track.stop());
     }
     if (this.userVideo && this.userVideo.nativeElement && this.userVideo.nativeElement.srcObject) {
-      (this.userVideo.nativeElement.srcObject as MediaStream).getVideoTracks()[0].stop();
+      this.userVideo.nativeElement.pause();
+      (this.userVideo.nativeElement.srcObject as MediaStream).getTracks().forEach(track => track.stop());
     }
     this.socketsService.socket.emit('CallEnd', {
       to: this.caller,
@@ -79,7 +82,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderer.appendChild(this.elementRef.nativeElement, script);
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     const entryData: any = this.location.getState();
     this.form = this.formBuilder.group({
       data: [''],
@@ -116,18 +119,26 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.socketsService.socket.on('cancelCall', () => {
-      console.log('---- cancelCall')
+      console.log('---- cancelCall');
       if (this.partnerVideo && this.partnerVideo.nativeElement && this.partnerVideo.nativeElement.srcObject) {
-        (this.partnerVideo.nativeElement.srcObject as MediaStream).getVideoTracks()[0].stop();
+        this.partnerVideo.nativeElement.pause();
+        (this.partnerVideo.nativeElement.srcObject as MediaStream).getTracks().forEach(track => track.stop());
       }
       if (this.userVideo && this.userVideo.nativeElement && this.userVideo.nativeElement.srcObject) {
-        (this.userVideo.nativeElement.srcObject as MediaStream).getVideoTracks()[0].stop();
+        this.userVideo.nativeElement.pause();
+        (this.userVideo.nativeElement.srcObject as MediaStream).getTracks().forEach(track => track.stop());
       }
-      if (this.peer) {
-      }
+
       this.userVideo.nativeElement.srcObject = null;
       this.partnerVideo.nativeElement.srcObject = null;
       document.location.reload();
+
+      this.router.navigateByUrl('/', {
+        state: {
+          ended: true,
+        }
+      });
+      // await this.timeout(2000);
     });
 
     this.socketsService.socket.on('callAccepted', (signal) => {
@@ -136,6 +147,14 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
       this.peer.signal(signal);
     });
 
+  }
+
+  async timeout(time: number) {
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, time);
+    });
   }
 
   notifySecondUser(userToCallId: string, email: string) {
@@ -158,6 +177,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
       initiator: false,
       trickle: false,
       stream: this.stream,
+      iceTransportPolicy: 'relay',
     });
     this.peer = peer;
 
@@ -334,17 +354,20 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     if (this.partnerVideo && this.partnerVideo.nativeElement && this.partnerVideo.nativeElement.srcObject) {
-      (this.partnerVideo.nativeElement.srcObject as MediaStream).getVideoTracks()[0].stop();
+      this.partnerVideo.nativeElement.pause();
+      (this.partnerVideo.nativeElement.srcObject as MediaStream).getTracks().forEach(track => track.stop());
     }
     if (this.userVideo && this.userVideo.nativeElement && this.userVideo.nativeElement.srcObject) {
-      (this.userVideo.nativeElement.srcObject as MediaStream).getVideoTracks()[0].stop();
+      this.userVideo.nativeElement.pause();
+      (this.userVideo.nativeElement.srcObject as MediaStream).getTracks().forEach(track => track.stop());
     }
 
     this.partnerVideo.nativeElement.srcObject = null;
+    document.location.reload();
+
     this.router.navigateByUrl('/', { state: {
         call: true,
       }});
-    document.location.reload();
   }
 
 }

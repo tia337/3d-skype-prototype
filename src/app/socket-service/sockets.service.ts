@@ -23,7 +23,7 @@ export class SocketsService  {
 
   // tslint:disable-next-line:typedef
   login() {
-    this.socket = socket('http://localhost:8888/api', {
+    this.socket = socket('http://192.168.31.149:8888/api', {
       path: '/api',
       query: { id: JSON.parse(localStorage.getItem('user')).id},
     });
@@ -32,13 +32,20 @@ export class SocketsService  {
       this.confirmationDialogService.confirm('Incoming call', `${data.email}`)
         .then((confirmed) => {
           console.log('User confirmed:', confirmed)
-          this.router.navigateByUrl('/video', { state: {
-              call: false,
-              receivingCall: true,
-              from: data.from,
-              // callerSignal: data.signal,
-            },
-          });
+          if (confirmed) {
+            this.router.navigateByUrl('/video', {
+              state: {
+                call: false,
+                receivingCall: true,
+                from: data.from,
+              },
+            });
+          } else {
+            this.socket.emit('CallEnd', {
+              to: data.from,
+              from: JSON.parse(localStorage.getItem('user')).id,
+            });
+          }
         })
         // tslint:disable-next-line:max-line-length
         .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));

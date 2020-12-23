@@ -34,8 +34,6 @@
     </div>
 
 <div style="height: 0">
-  <canvas id="canvas" #canvas>1111</canvas>
-  <canvas id="canvas1" #canvas1>1111</canvas>
   <div>
     <div *ngIf="receivingCall" class="row" [hidden]="callAccepted">
       <div class="col-md-5" style="text-align: left;">
@@ -52,15 +50,14 @@
   <div class="row">
     <div class="col-md-6 alignContent">
       <video
+        [muted]="true"
         hidden="true"
         id="video"
         width="640"
         height="480"
-        playsInline
         #userVideo
-        autoPlay
-        loaded-data
-        muted
+        autoplay
+        playsinline
       ></video>
     </div>
     <div class="col-md-6 alignContent">
