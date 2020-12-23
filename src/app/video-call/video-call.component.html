@@ -1,5 +1,4 @@
-
-    <div class="call-page-container">
+<div class="call-page-container">
         <div class="higher-slider-container">
             <input type="range" min="40" max="100" value="100" class="slider" id="size-range">
         </div>
@@ -7,13 +6,13 @@
             <input type="range" min="100" max="100" value="100" class="slider slider-disabled" id="distance-range">
         </div>
         <div class="video-blocks">
-            <div class="video-block higher-block" style="width: 250px; height: 250px;"></div>
+            <canvas name="video-canvas" class="video-block higher-block" style="width: 250px; height: 250px;"></canvas>
             <div class="center-blocks">
-                <div class="video-block center-block left" style="width: 250px; height: 250px;"></div>
-                <div class="video-block center-block invisible" id="invisible-block" style="width: 250px; height: 250px;"></div>
-                <div class="video-block center-block right" style="width: 250px; height: 250px;"></div>
+                <canvas name="video-canvas" class="video-block center-block left" style="width: 250px; height: 250px;"></canvas>
+                <canvas name="video-canvas" class="video-block center-block invisible" id="invisible-block" style="width: 250px; height: 250px;"></canvas>
+                <canvas name="video-canvas" class="video-block center-block right" style="width: 250px; height: 250px;"></canvas>
             </div>
-            <div class="video-block lower-block" style="width: 250px; height: 250px;"></div>
+            <canvas name="video-canvas" class="video-block lower-block" style="width: 250px; height: 250px;"></canvas>
         </div>
         <div class="actions">
             <div class="action-container blue">
@@ -26,10 +25,52 @@
                     mic_off
                 </span>
             </div>
-            <div class="action-container red">
+            <div class="action-container red" (click)="onStop()">
                 <span class="material-icons action">
                     call_end
                 </span>
             </div>
         </div>
     </div>
+
+<div style="height: 0">
+  <div>
+    <div *ngIf="receivingCall" class="row" [hidden]="callAccepted">
+      <div class="col-md-5" style="text-align: left;">
+        <button type="button" class="btn btn-success" style="margin-right:10px;" (click)="acceptCall()">
+          Accept
+        </button>
+          <button type="button" class="btn btn-danger" (click)="onStop()">
+            Reject
+          </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 alignContent">
+      <video
+        [muted]="true"
+        hidden="true"
+        id="video"
+        width="640"
+        height="480"
+        #userVideo
+        autoplay
+        playsinline
+      ></video>
+    </div>
+    <div class="col-md-6 alignContent">
+      <video
+        hidden="true"
+        id="partnerVideo"
+        width="640"
+        height="480"
+        playsInline
+        #partnerVideo
+        autoPlay
+      ></video>
+    </div>
+  </div>
+</div>
+

@@ -5,6 +5,7 @@ import { Account } from '@app/_models';
 import { AccountService } from '@app/_services';
 import { Observable, of } from 'rxjs';
 import { catchError, filter, finalize, map, tap } from 'rxjs/operators';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-find-participant',
@@ -18,7 +19,11 @@ export class FindParticipantComponent implements OnInit {
   loading: boolean;
   submitted = false;
 
-  constructor(private fb: FormBuilder, private accountService: AccountService) { 
+  constructor(
+    private fb: FormBuilder,
+    private accountService: AccountService,
+    private router: Router,
+    ) {
     this.initForm();
   }
 
@@ -39,6 +44,14 @@ export class FindParticipantComponent implements OnInit {
     this.participant$ = this.accountService
       .getParticipantByEmail(this.searchForm.value?.searchString)
       .pipe(finalize(() => this.loading = false));
+  }
+
+  makeCall(id, email) {
+    this.router.navigateByUrl('/video', { state: {
+        call: true,
+        to: id,
+        email
+      }});
   }
 
   private initForm(): void {

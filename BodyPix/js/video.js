@@ -20,7 +20,7 @@ const BACKGROUND_COLOR= {r: 0, g: 0, b: 0, a: 255};
 const OPACITY = 1;
 const MASK_BLUR_AMOUNT = 0;
 const DRAW_FLIP_HORIZONTAL = true;
- 
+
 const videoElement = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 
@@ -81,7 +81,7 @@ videoElement.onplaying = () => {
 };
 
 function startVideoStream() {
-  navigator.mediaDevices.getUserMedia({video: true, audio: false})
+  navigator.mediaDevices.getUserMedia({video: true, audio: true})
     .then(stream => {
       videoElement.srcObject = stream;
       videoElement.play();
@@ -127,7 +127,7 @@ async function perform(net) {
 
 	const backgroundDarkeningMask = bodyPix.toMask(
 		segmentation, FOREGROUND_COLOR, BACKGROUND_COLOR);
-	
+
 	const opacity = 1;
 	const maskBlurAmount = 0;
 	const flipHorizontal = true;

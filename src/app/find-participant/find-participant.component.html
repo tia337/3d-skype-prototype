@@ -2,16 +2,16 @@
 <div class="container fill">
     <form [formGroup]="searchForm">
         <div class="input-group mb-3 mt-3">
-            <input type="text" 
-                formControlName="searchString" 
-                class="form-control" 
-                placeholder="Email" 
-                aria-label="Email" 
+            <input type="text"
+                formControlName="searchString"
+                class="form-control"
+                placeholder="Email"
+                aria-label="Email"
                 aria-describedby="basic-addon2"
                 [ngClass]="{ 'is-invalid': submitted && f.searchString.errors }"
             >
             <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" 
+            <button class="btn btn-outline-secondary" type="button"
                 (click)="submitForm()" [disabled]="loading"
             >
                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
@@ -29,7 +29,7 @@
         <li class="list-group-item d-flex">
             <div class="col-4 align-self-center">{{participant.name}}</div>
             <div class="col-4 align-self-center">{{participant.email}}</div>
-            <a class="btn btn-success col-4" [routerLink]="['/video']">Call user</a>
+            <a class="btn btn-success col-4" (click)="makeCall(participant.id, participant.email)">Call user</a>
         </li>
     </ul>
 
