@@ -26,7 +26,8 @@ namespace _3DSkypeServer
     {
       services.AddCors(options =>
       {
-        options.AddPolicy("AllowAny", builder => builder.AllowAnyOrigin());
+        options.AddPolicy("AllowAny", builder => builder
+          .AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
       });
       
       services.AddControllers();
@@ -75,7 +76,7 @@ namespace _3DSkypeServer
       {
         app.UseDeveloperExceptionPage();
       }
-
+      
       app.UseHttpsRedirection();
 
       // Enable middleware to serve generated Swagger as a JSON endpoint.
